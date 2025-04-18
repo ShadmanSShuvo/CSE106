@@ -1,79 +1,76 @@
-#include <stdio.h>
-#include <stdlib.h>
+#include <iostream>
+using namespace std;
 
 struct Node {
     int data;
-    struct Node* next;
+    Node* next;
+
+    Node(int val) {
+        data = val;
+        next = nullptr;
+    }
 };
 
-void insertAtBeginning(struct Node** head, int newData) {
-    struct Node* newNode = (struct Node*) malloc(sizeof(struct Node));
-    newNode->data = newData;
-    newNode->next = *head;
-    *head = newNode;
+void insertAtBeginning(Node*& head, int val) {
+    Node* newNode = new Node(val);
+    newNode->next = head;
+    head = newNode;
 }
 
-void insertAtEnd(struct Node** head, int newData) {
-    struct Node* newNode = (struct Node*) malloc(sizeof(struct Node));
-    newNode->data = newData;
-    newNode->next = NULL;
-
-    if (*head == NULL) {
-        *head = newNode;
+void insertAtEnd(Node*& head, int val) {
+    Node* newNode = new Node(val);
+    if (!head) {
+        head = newNode;
         return;
     }
-
-    struct Node* temp = *head;
-    while (temp->next != NULL)
+    Node* temp = head;
+    while (temp->next)
         temp = temp->next;
-
     temp->next = newNode;
 }
 
-void deleteNode(struct Node** head, int key) {
-    struct Node* temp = *head, *prev = NULL;
+void deleteNode(Node*& head, int val) {
+    if (!head) return;
 
-    if (temp != NULL && temp->data == key) {
-        *head = temp->next;
-        free(temp);
+    if (head->data == val) {
+        Node* del = head;
+        head = head->next;
+        delete del;
         return;
     }
 
-    while (temp != NULL && temp->data != key) {
-        prev = temp;
+    Node* temp = head;
+    while (temp->next && temp->next->data != val)
         temp = temp->next;
+
+    if (temp->next) {
+        Node* del = temp->next;
+        temp->next = temp->next->next;
+        delete del;
     }
-
-    if (temp == NULL) return;
-
-    prev->next = temp->next;
-    free(temp);
 }
 
-void printList(struct Node* node) {
-    while (node != NULL) {
-        printf("%d -> ", node->data);
-        node = node->next;
+void printList(Node* head) {
+    while (head) {
+        cout << head->data << " -> ";
+        head = head->next;
     }
-    printf("NULL\n");
+    cout << "NULL\n";
 }
-
-
-
 
 int main() {
-    struct Node* head = NULL;
+    Node* head = nullptr;
 
-    insertAtEnd(&head, 10);
-    insertAtBeginning(&head, 20);
-    insertAtBeginning(&head, 30);
-    insertAtEnd(&head, 40);
+    insertAtEnd(head, 10);
+    insertAtBeginning(head, 20);
+    insertAtBeginning(head, 30);
+    insertAtEnd(head, 40);
 
-    printf("Linked List: ");
+    cout << "Linked List: ";
     printList(head);
 
-    deleteNode(&head, 20);
-    printf("After Deletion: ");
+    deleteNode(head, 20);
+    cout << "After Deletion: ";
     printList(head);
 
     return 0;
